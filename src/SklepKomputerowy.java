@@ -8,12 +8,20 @@ import java.time.LocalDate;
         private int liczbaKlientow;
         private int liczbaZamowien;
 
-        public void dodajProdukt(Produkt produkt1) {
-            //TODO
+        public void dodajProdukt(Produkt produkt) {
+            if (liczbaProduktow < produkty.length) {
+                produkty[liczbaProduktow++] = produkt;
+            } else {
+                System.out.println("Nie można dodać więcej produktów — brak miejsca.");
+            }
         }
 
-        public void dodajKlienta(Klient klient1) {
-            //TODO
+        public void dodajKlienta(Klient klient) {
+            if (liczbaKlientow < klienci.length) {
+                klienci[liczbaKlientow++] = klient;
+            } else {
+                System.out.println("Nie można dodać więcej klientów — brak miejsca.");
+            }
         }
 
         public Zamowienie utworzZamowienie(
