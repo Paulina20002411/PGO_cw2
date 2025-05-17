@@ -1,88 +1,87 @@
 import java.time.LocalDate;
 
-    public class SklepKomputerowy {
-        private Produkt[] produkty = new Produkt[10];
-        private Klient[] klienci = new Klient[10];
-        private Zamowienie[] zamowienia = new Zamowienie[10];
-        private int liczbaProduktow;
-        private int liczbaKlientow;
-        private int liczbaZamowien;
+public class SklepKomputerowy {
+    private Produkt[] listaProduktow = new Produkt[10];
+    private Klient[] listaKlientow = new Klient[10];
+    private Zamowienie[] listaZamowien = new Zamowienie[10];
+    private int licznikProduktow = 0;
+    private int licznikKlientow = 0;
+    private int licznikZamowien = 0;
 
-        public void dodajProdukt(Produkt produkt) {
-            if (liczbaProduktow < produkty.length) {
-                produkty[liczbaProduktow++] = produkt;
-            } else {
-                System.out.println("Nie można dodać więcej produktów — brak miejsca.");
-            }
+    public void dodajProdukt(Produkt nowyProdukt) {
+        if (licznikProduktow >= listaProduktow.length) {
+            System.out.println("Nie można dodać więcej produktów — brak miejsca.");
+            return;
         }
+        listaProduktow[licznikProduktow] = nowyProdukt;
+        licznikProduktow++;
+    }
 
-        public void dodajKlienta(Klient klient) {
-            if (liczbaKlientow < klienci.length) {
-                klienci[liczbaKlientow++] = klient;
-            } else {
-                System.out.println("Nie można dodać więcej klientów — brak miejsca.");
-            }
+    public void dodajKlienta(Klient nowyKlient) {
+        if (licznikKlientow >= listaKlientow.length) {
+            System.out.println("Nie można dodać więcej klientów — brak miejsca.");
+            return;
         }
+        listaKlientow[licznikKlientow++] = nowyKlient;
+    }
 
-        public Zamowienie utworzZamowienie(
-                Klient klient1,
-                Produkt[] produktyZamowienia1,
-                int[] ilosciZamowienia1) {
+    public Zamowienie utworzZamowienie(Klient klient, Produkt[] produktyZamowione, int[] ilosci) {
+        Zamowienie z = new Zamowienie();
+        z.setId(0);
+        z.setKlient(klient);
+        z.setProdukty(produktyZamowione);
+        z.setIlosci(ilosci);
+        z.setDataZamowienia(LocalDate.now().toString());
+        z.setStatus("Nowe");
+        return z;
+    }
 
-            Zamowienie zamowienie = new Zamowienie();
-            zamowienie.setId(0);
-            zamowienie.setKlient(klient1);
-            zamowienie.setProdukty(produktyZamowienia1);
-            zamowienie.setIlosci(ilosciZamowienia1);
-            zamowienie.setDataZamowienia(LocalDate.now().toString());
-            zamowienie.setStatus("Nowe");
+    public void aktualizujStanMagazynowy(Zamowienie zam) {
+        Produkt[] zamProdukty = zam.getProdukty();
+        int[] ilosci = zam.getIlosci();
 
-            return zamowienie;
-        }
-
-        public void aktualizujStanMagazynowy(Zamowienie zamowienie) {
-            Produkt[] zamProdukty = zamowienie.getProdukty();
-            int[] zamIlosci = zamowienie.getIlosci();
-
-            for (int i = 0; i < zamProdukty.length; i++) {
-                Produkt p = zamProdukty[i];
-                int iloscZamowiona = zamIlosci[i];
-
-                for (int j = 0; j < liczbaProduktow; j++) {
-                    if (produkty[j].getId() == p.getId()) {
-                        int nowaIlosc = produkty[j].getIloscWMagazynie() - iloscZamowiona;
-                        produkty[j].setIloscWMagazynie(nowaIlosc);
-                    }
-                }
-            }
-        }
-
-        public void zmienStatusZamowienia(int idZamowienia, String nowyStatus) {
-            for (int i = 0; i < liczbaZamowien; i++) {
-                if (zamowienia[i].getId() == idZamowienia) {
-                    zamowienia[i].setStatus(nowyStatus);
+        for (int i = 0; i < zamProdukty.length; i++) {
+            int idProduktu = zamProdukty[i].getId();
+            for (int j = 0; j < licznikProduktow; j++) {
+                if (listaProduktow[j].getId() == idProduktu) {
+                    int nowyStan = listaProduktow[j].getIloscWMagazynie() - ilosci[i];
+                    listaProduktow[j].setIloscWMagazynie(nowyStan);
                     break;
                 }
             }
         }
+    }
 
-        public void wyswietlProduktyWKategorii(String kategoria) {
-            System.out.println("Produkty w kategorii: " + kategoria);
-            for (int i = 0; i < liczbaProduktow; i++) {
-                if (produkty[i].getKategoria().equalsIgnoreCase(kategoria)) {
-                    produkty[i].wyswietlInformacje();
-                    System.out.println("-----");
-                }
-            }
-        }
-
-        public void wyswietlZamowieniaKlienta(int idKlienta) {
-            for (int i = 0; i < liczbaZamowien; i++) {
-                if (zamowienia[i].getKlient().getId() == idKlienta) {
-                    zamowienia[i].wyswietlSzczegoly();
-                    System.out.println("======================");
-                }
+    public void zmienStatusZamowienia(int idZam, String nowyStatus) {
+        for (int i = 0; i < licznikZamowien; i++) {
+            Zamowienie z = listaZamowien[i];
+            if (z.getId() == idZam) {
+                z.setStatus(nowyStatus);
+                return;
             }
         }
     }
+
+    public void wyswietlProduktyWKategorii(String kategoria) {
+        System.out.println("Produkty w kategorii: " + kategoria);
+        for (int i = 0; i < licznikProduktow; i++) {
+            Produkt p = listaProduktow[i];
+            if (p.getKategoria().equalsIgnoreCase(kategoria)) {
+                p.wyswietlInformacje();
+                System.out.println("-----");
+            }
+        }
+    }
+
+    public void wyswietlZamowieniaKlienta(int idKlienta) {
+        for (int i = 0; i < licznikZamowien; i++) {
+            Zamowienie z = listaZamowien[i];
+            if (z.getKlient().getId() == idKlienta) {
+                z.wyswietlSzczegoly();
+                System.out.println("======================");
+            }
+        }
+    }
+}
+
 
